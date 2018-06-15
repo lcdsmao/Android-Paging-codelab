@@ -18,6 +18,7 @@ package com.example.android.codelabs.paging.ui
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.DividerItemDecoration
@@ -65,7 +66,7 @@ class SearchRepositoriesActivity : AppCompatActivity() {
 
     private fun initAdapter() {
         list.adapter = adapter
-        viewModel.repos.observe(this, Observer<List<Repo>> {
+        viewModel.repos.observe(this, Observer<PagedList<Repo>> {
             Log.d("Activity", "list: ${it?.size}")
             showEmptyList(it?.size == 0)
             adapter.submitList(it)
@@ -78,22 +79,22 @@ class SearchRepositoriesActivity : AppCompatActivity() {
     private fun initSearch(query: String) {
         search_repo.setText(query)
 
-        search_repo.setOnEditorActionListener({ _, actionId, _ ->
+        search_repo.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_GO) {
                 updateRepoListFromInput()
                 true
             } else {
                 false
             }
-        })
-        search_repo.setOnKeyListener({ _, keyCode, event ->
+        }
+        search_repo.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 updateRepoListFromInput()
                 true
             } else {
                 false
             }
-        })
+        }
     }
 
     private fun updateRepoListFromInput() {
