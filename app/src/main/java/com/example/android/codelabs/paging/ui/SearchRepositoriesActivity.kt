@@ -51,7 +51,6 @@ class SearchRepositoriesActivity : AppCompatActivity() {
         // add dividers between RecyclerView's row items
         val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         list.addItemDecoration(decoration)
-        setupScrollListener()
 
         initAdapter()
         val query = savedInstanceState?.getString(LAST_SEARCH_QUERY) ?: DEFAULT_QUERY
@@ -117,19 +116,7 @@ class SearchRepositoriesActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupScrollListener() {
-        val layoutManager = list.layoutManager as LinearLayoutManager
-        list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val totalItemCount = layoutManager.itemCount
-                val visibleItemCount = layoutManager.childCount
-                val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
 
-                viewModel.listScrolled(visibleItemCount, lastVisibleItem, totalItemCount)
-            }
-        })
-    }
 
     companion object {
         private const val LAST_SEARCH_QUERY: String = "last_search_query"
