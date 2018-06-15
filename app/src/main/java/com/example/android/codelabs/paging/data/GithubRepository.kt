@@ -17,6 +17,7 @@
 package com.example.android.codelabs.paging.data
 
 import android.arch.lifecycle.MutableLiveData
+import android.arch.paging.LivePagedListBuilder
 import android.util.Log
 import com.example.android.codelabs.paging.api.GithubService
 import com.example.android.codelabs.paging.api.searchRepos
@@ -45,11 +46,12 @@ class GithubRepository(
      */
     fun search(query: String): RepoSearchResult {
         Log.d("GithubRepository", "New query: $query")
-        lastRequestedPage = 1
-        requestAndSaveData(query)
 
-        // Get data from the local cache
-        val data = cache.reposByName(query)
+        // Get data source factory from the local cache
+        val dataSourceFactory = cache.reposByName(query)
+
+        // Get the paged list
+        val data = LivePagedListBuilder(dataSourceFactory, DATABASE_PAGE_SIZE).build()
 
         return RepoSearchResult(data, networkErrors)
     }
@@ -63,10 +65,10 @@ class GithubRepository(
 
         isRequestInProgress = true
         searchRepos(service, query, lastRequestedPage, NETWORK_PAGE_SIZE, { repos ->
-            cache.insert(repos, {
+            cache.insert(repos) {
                 lastRequestedPage++
                 isRequestInProgress = false
-            })
+            }
         }, { error ->
             networkErrors.postValue(error)
             isRequestInProgress = false
@@ -75,5 +77,6 @@ class GithubRepository(
 
     companion object {
         private const val NETWORK_PAGE_SIZE = 50
+        private const val DATABASE_PAGE_SIZE = 20
     }
 }
